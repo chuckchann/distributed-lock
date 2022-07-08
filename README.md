@@ -12,11 +12,28 @@ distributed-lock是使用Golang实现的基于redis/etcd/zookeep实现的分布�
 
 ------
 
-## TODO
+
+
+## Example
+
+download packge first
+
+```shell
+go get github.com/chuckchann/distributed-lock
+```
+
+example 
+
+```go
+
+```
+
 
 
 
 ------
 
-## Example
+## TODO
+
+
 
