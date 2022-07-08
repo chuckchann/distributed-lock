@@ -4,7 +4,7 @@
 ![avatar](https://img.shields.io/badge/release-v1.0.0-brightgreen)
 ![avatar](https://img.shields.io/badge/license-unkown-yellow)
 
-distributed-lock is a distributed mutex lock written in Go. It provides three implements, including redis, etcd and zookeeper(todo)
+distributed-lock is a distributed mutex lock written in Go. It provides three implements, including redis, etcd and zookeeper(todo).
 
 ## Implement
 
@@ -18,7 +18,7 @@ distributed-lock is a distributed mutex lock written in Go. It provides three im
 
 ## How to use 
 
-download packge first
+download package
 
 ```shell
 go get -u github.com/chuckchann/distributed-lock
