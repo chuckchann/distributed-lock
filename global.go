@@ -1,7 +1,7 @@
 package distributed_lock
 
 import (
-	"distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/entry"
 	"io"
 	"log"
 )
