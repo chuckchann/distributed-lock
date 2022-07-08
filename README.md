@@ -1,11 +1,13 @@
 # distributed-lock
+
 ![avatar](https://img.shields.io/badge/build-unkown-orange)
 ![avatar](https://img.shields.io/badge/release-v1.0.0-brightgreen)
 ![avatar](https://img.shields.io/badge/license-unkown-yellow)
 
-distributed-lock是使用Golang实现的基于redis/etcd/zookeep实现的分布式锁。
+distributed-lock is a distributed mutex lock written in Go. It provides three implements, including redis, etcd and zookeeper(todo)
 
 ## Implement
+
 - [x] redis
 - [x] etcd
 - [ ] zookeeper
@@ -14,18 +16,41 @@ distributed-lock是使用Golang实现的基于redis/etcd/zookeep实现的分布�
 
 
 
-## Example
+## How to use 
 
 download packge first
 
 ```shell
-go get github.com/chuckchann/distributed-lock
+go get -u github.com/chuckchann/distributed-lock
 ```
 
 example 
 
 ```go
+func main()  {
+	//init client
+	redis_lock.Init(entry.Config{
+		Endpoints:   []string{"127.0.0.1:6379"},
+		DBIndex:     15,
+		MaxConns:    20,
+		IdleTimeout: 10 * time.Second,
+		Password: 	"123456",
+	})
+	
+	//create a new redis lock
+	l := distributed_lock.New("test")
+  
+  //acquire lock
+	err := l.Lock()
+	if err != nil {
+		return
+	}
 
+	//acquire lock successfully
+	//handle logic business ...
+
+	l.UnLock()
+}
 ```
 
 
@@ -35,5 +60,6 @@ example
 
 ## TODO
 
-
+- redis lock: change old lock policy(self spin if current lock was occupied by other client), the new lock policy just like [redission](https://github.com/redisson/redisson).
+- zookeeper implement. 
 
