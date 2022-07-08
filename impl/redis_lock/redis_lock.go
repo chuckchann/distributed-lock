@@ -5,8 +5,8 @@ package redis_lock
 //2. redis server version >= 2.6.0
 
 import (
-	"distributed-lock/entry"
 	"errors"
+	"github.com/chuckchann/distributed-lock/entry"
 	"github.com/google/uuid"
 	"log"
 	"runtime"

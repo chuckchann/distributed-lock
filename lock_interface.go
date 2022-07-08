@@ -1,10 +1,10 @@
 package distributed_lock
 
 import (
-	"distributed-lock/entry"
-	"distributed-lock/impl"
-	"distributed-lock/impl/etcd_lock"
-	"distributed-lock/impl/redis_lock"
+	"github.com/chuckchann/distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/impl"
+	"github.com/chuckchann/distributed-lock/impl/etcd_lock"
+	"github.com/chuckchann/distributed-lock/impl/redis_lock"
 )
 
 type DistributedLock interface {

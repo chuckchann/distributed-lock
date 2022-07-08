@@ -1,8 +1,8 @@
 package redis_lock
 
 import (
-	"distributed-lock/entry"
-	"distributed-lock/impl"
+	"github.com/chuckchann/distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/impl"
 	"gopkg.in/redis.v5"
 )
 

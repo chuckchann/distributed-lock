@@ -1,8 +1,8 @@
 package etcd_lock
 
 import (
-	"distributed-lock/entry"
 	"fmt"
+	"github.com/chuckchann/distributed-lock/entry"
 	"sync"
 	"testing"
 	"time"

@@ -1,8 +1,8 @@
 package etcd_lock
 
 import (
-	"distributed-lock/entry"
-	"distributed-lock/impl"
+	"github.com/chuckchann/distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/impl"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"time"
 )

@@ -2,8 +2,8 @@ package etcd_lock
 
 import (
 	"context"
-	"distributed-lock/entry"
 	"errors"
+	"github.com/chuckchann/distributed-lock/entry"
 	"go.etcd.io/etcd/client/v3/concurrency"
 	"log"
 )
