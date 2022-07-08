@@ -1,4 +1,4 @@
-module distributed-lock
+module github.com/chuckchann/distributed-lock
 
 go 1.16
 
