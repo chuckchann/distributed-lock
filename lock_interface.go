@@ -25,5 +25,6 @@ func New(bizKey string, opts ...entry.Option) DistributedLock {
 	default:
 		return redis_lock.New(bizKey, opts...)
 	}
+	return nil
 }
 
