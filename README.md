@@ -4,19 +4,17 @@
 ![avatar](https://img.shields.io/badge/release-v1.0.0-brightgreen)
 ![avatar](https://img.shields.io/badge/license-unkown-yellow)
 
-distributed-lock is a high performance distributed mutex written in Go. It provides three implements, including redis, etcd and zookeeper(todo).
+distributed-lock is a high performance distributed mutex written in Go. It provides three implements, including redis, etcd and zookeeper.
 
 ## Implement
 
 - [x] redis: guarantee **AP**
 - [x] etcd: guarantee **CP**
-- [ ] zookeeper: guarantee **CP**
+- [x] zookeeper: guarantee **CP**
 
 ------
 
-
-
-## How to use 
+## How to use
 
 download package
 
@@ -61,5 +59,6 @@ func main()  {
 ## TODO
 
 - redis lock: change old lock policy(self spin if current lock was occupied by other client), the new lock policy just like [redission](https://github.com/redisson/redisson).
-- zookeeper implement. 
+
+  
 

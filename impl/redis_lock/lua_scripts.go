@@ -23,7 +23,7 @@ var (
 `
 
 	//RenewalScript for renewal the lease
-	RenewalScript =  `
+	RenewalScript = `
 	if redis.call('EXISTS', KEYS[1]) == 1
 		then 
    			redis.call('PEXPIRE', KEYS[1], ARGV[1])

@@ -26,7 +26,6 @@ var (
 	ErrEmptyVal    = errors.New("lock value is empty")
 )
 
-
 type RedisLock struct {
 	*entry.OptionConfig
 	bizKey      string
@@ -45,7 +44,7 @@ func New(bizKey string, opts ...entry.Option) *RedisLock {
 	return &RedisLock{
 		OptionConfig: oc,
 		bizKey:       bizKey,
-		stopWatchCh:  make(chan struct{}, 1),  //prevent goroutine leak
+		stopWatchCh:  make(chan struct{}, 1), //prevent goroutine leak
 	}
 }
 
@@ -128,11 +127,10 @@ func (rl *RedisLock) UnLock() error {
 	}
 
 	//notify the watch goroutine to stop watch the key
-	rl.stopWatchCh <-struct {}{}
+	rl.stopWatchCh <- struct{}{}
 
 	return nil
 }
-
 
 func (rl *RedisLock) ForceKillScript() {
 	redisClient.ScriptKill()
@@ -141,7 +139,7 @@ func (rl *RedisLock) ForceKillScript() {
 func (rl *RedisLock) generateRedisKey() string {
 	if entry.GlobalPrefix != "" {
 		return strings.Join([]string{entry.GlobalPrefix, "redis_lock", rl.bizKey}, ":")
-	}else {
+	} else {
 		return strings.Join([]string{"redis_lock", rl.bizKey}, ":")
 	}
 }
@@ -161,7 +159,7 @@ func (rl *RedisLock) watch() {
 			res, err := redisClient.Eval(RenewalScript, []string{key}, 30000).Result()
 			if err != nil {
 				log.Printf("renewal key %s failed: %s", key, err.Error())
-			}else {
+			} else {
 				if r, _ := res.(int64); r == 1 {
 					log.Printf("renewal key: %s successfuly ", key)
 				}

@@ -18,7 +18,7 @@ func Init(cfg entry.Config) {
 		panic("init ectd client failed, " + err.Error())
 	}
 
-	impl.UsingType = 2
+	impl.Type = impl.ETCD
 
 	etcdClinet = c
 }

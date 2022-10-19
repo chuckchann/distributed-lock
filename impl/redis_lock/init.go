@@ -26,7 +26,7 @@ func Init(cfg entry.Config) {
 		panic("can not connect to redis, err:" + err.Error())
 	}
 
-	impl.UsingType = 1
+	impl.Type = impl.REDIS
 
 	redisClient = cli
 }

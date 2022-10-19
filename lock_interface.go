@@ -5,6 +5,7 @@ import (
 	"github.com/chuckchann/distributed-lock/impl"
 	"github.com/chuckchann/distributed-lock/impl/etcd_lock"
 	"github.com/chuckchann/distributed-lock/impl/redis_lock"
+	"github.com/chuckchann/distributed-lock/impl/zookeeper_lock"
 )
 
 type DistributedLock interface {
@@ -15,16 +16,14 @@ type DistributedLock interface {
 
 //init client before you use lock!!
 func New(bizKey string, opts ...entry.Option) DistributedLock {
-	switch impl.UsingType {
-	case 1:
+	switch impl.Type {
+	case impl.REDIS:
 		return redis_lock.New(bizKey, opts...)
-	case 2:
+	case impl.ETCD:
 		return etcd_lock.New(bizKey, opts...)
-	case 3:
-		//return zookeeper_lock.New(bizKey, opts...)
+	case impl.ZOOKEEPER:
+		return zookeeper_lock.New(bizKey, opts...)
 	default:
 		return redis_lock.New(bizKey, opts...)
 	}
-	return nil
 }
-

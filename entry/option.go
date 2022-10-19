@@ -26,5 +26,3 @@ func WithNoSpinMode() Option {
 		c.NoSpin = true
 	}
 }
-
-

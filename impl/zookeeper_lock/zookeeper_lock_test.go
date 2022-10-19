@@ -1,4 +1,4 @@
-package etcd_lock
+package zookeeper_lock
 
 import (
 	"fmt"
@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func TestEtcdLock_Lock(t *testing.T) {
+func TestZookeeperLock_Lock(t *testing.T) {
 	Init(entry.Config{
-		Endpoints: []string{"127.0.0.1:2379"},
+		Endpoints: []string{"127.0.0.1:9999"},
 	})
 
 	iphone := 60

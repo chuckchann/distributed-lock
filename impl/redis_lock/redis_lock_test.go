@@ -17,12 +17,12 @@ func TestRedisLock_Lock(t *testing.T) {
 		DBIndex:     15,
 		MaxConns:    20,
 		IdleTimeout: 10 * time.Second,
-		Password: "123456",
+		Password:    "123456",
 	})
 
 	m := make(map[int]bool, 100)
 	iphone := 50
-	rl := New("buy-iphone", entry.WithTTL(time.Second * 10))
+	rl := New("buy-iphone", entry.WithTTL(time.Second*10))
 	wg := sync.WaitGroup{}
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
@@ -34,7 +34,7 @@ func TestRedisLock_Lock(t *testing.T) {
 			}
 			defer rl.UnLock()
 			if iphone > 0 {
-				fmt.Printf( "%d号用户 抢到iPhone 当前剩余iphone: %d \n", i, iphone)
+				fmt.Printf("%d号用户 抢到iPhone 当前剩余iphone: %d \n", i, iphone)
 				iphone--
 				m[i] = true
 			} else {
@@ -71,10 +71,9 @@ func TestRedisLock_Lock2(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
-
 	go func() {
 		defer wg.Done()
-		rl := New(bizKey, entry.WithTTL(5 * time.Second))
+		rl := New(bizKey, entry.WithTTL(5*time.Second))
 		if err := rl.Lock(); err != nil {
 			t.Fatal("1获取锁失败")
 		}
@@ -88,7 +87,7 @@ func TestRedisLock_Lock2(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		rl := New(bizKey, entry.WithTTL(5 * time.Second))
+		rl := New(bizKey, entry.WithTTL(5*time.Second))
 		if err := rl.Lock(); err != nil {
 			t.Fatal("2获取锁失败")
 		}
@@ -104,7 +103,7 @@ func TestRedisLock_Lock2(t *testing.T) {
 	time.Sleep(2 * time.Second)
 }
 
-func Test_lua(t *testing.T)  {
+func Test_lua(t *testing.T) {
 	Init(entry.Config{
 		Endpoints:   []string{host},
 		DBIndex:     15,
@@ -118,13 +117,13 @@ func Test_lua(t *testing.T)  {
 	t.Log(res, err)
 }
 
-func Test_lua2(t *testing.T)  {
+func Test_lua2(t *testing.T) {
 	Init(entry.Config{
 		Endpoints:   []string{host},
 		DBIndex:     15,
 		MaxConns:    20,
 		IdleTimeout: 10 * time.Second,
-		Password: "123456",
+		Password:    "123456",
 	})
 	res, err := redisClient.Eval(RenewalScript, []string{"test2"}, 30000).Result()
 	if err != nil {
@@ -132,4 +131,3 @@ func Test_lua2(t *testing.T)  {
 	}
 	t.Log(res, err)
 }
-
