@@ -6,10 +6,11 @@ import (
 
 var GlobalPrefix string
 
-type OptionConfig struct {
+type Options struct {
 	TTL     time.Duration
 	Timeout time.Duration
 	NoSpin  bool
+	Logger  Logger
 }
 
 type Config struct {

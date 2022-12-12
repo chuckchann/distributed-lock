@@ -26,7 +26,7 @@ example
 
 ```go
 func main()  {
-	//init client
+	// init redis/etcd/zookeeper client berfore you use lock !!!
 	redis_lock.Init(entry.Config{
 		Endpoints:   []string{"127.0.0.1:6379"},
 		DBIndex:     15,
@@ -35,17 +35,17 @@ func main()  {
 		Password: 	"123456",
 	})
 	
-	//create a new redis lock
+	// create a new redis lock
 	l := distributed_lock.New("test")
   
-  //acquire lock
+    // acquire lock
 	err := l.Lock()
 	if err != nil {
 		return
 	}
 
-	//acquire lock successfully
-	//handle logic business ...
+	// acquire lock successfully
+	// handle logic business ...
 
 	l.UnLock()
 }

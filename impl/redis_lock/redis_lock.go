@@ -5,8 +5,8 @@ package redis_lock
 //2. redis server version >= 2.6.0
 
 import (
-	"errors"
 	"github.com/chuckchann/distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/impl"
 	"github.com/google/uuid"
 	"log"
 	"runtime"
@@ -20,31 +20,28 @@ const (
 	WatchInterval  = 5 * time.Second
 )
 
-var (
-	ErrLockFailed  = errors.New("get lock failed")
-	ErrLockTimeout = errors.New("get lock timeout")
-	ErrEmptyVal    = errors.New("lock value is empty")
-)
-
 type RedisLock struct {
-	*entry.OptionConfig
+	*entry.Options
 	bizKey      string
 	value       string
 	stopWatchCh chan struct{}
 }
 
 func New(bizKey string, opts ...entry.Option) *RedisLock {
-	oc := &entry.OptionConfig{
+	o := &entry.Options{
 		TTL:    DefaultTTL,
 		NoSpin: false,
 	}
 	for _, opt := range opts {
-		opt(oc)
+		opt(o)
+	}
+	if o.Logger == nil {
+		o.Logger = log.Default()
 	}
 	return &RedisLock{
-		OptionConfig: oc,
-		bizKey:       bizKey,
-		stopWatchCh:  make(chan struct{}, 1), //prevent goroutine leak
+		Options:     o,
+		bizKey:      bizKey,
+		stopWatchCh: make(chan struct{}, 1), //buffered channel prevent goroutine leak
 	}
 }
 
@@ -59,11 +56,11 @@ func (rl *RedisLock) TryLock() error {
 
 	b, err := redisClient.SetNX(k, v, rl.TTL).Result()
 	if err != nil {
-		log.Println("TryLock [SetNX] failed:", err)
+		rl.Logger.Printf("RedisLock：TryLock [SetNX] failed %v \n", err)
 		return err
 	}
 	if !b {
-		return ErrLockFailed
+		return impl.ErrLockFailed
 	}
 
 	//get lock success
@@ -87,11 +84,11 @@ func (rl *RedisLock) Lock() error {
 	for {
 		select {
 		case <-t.C:
-			return ErrLockTimeout
+			return impl.ErrLockTimeout
 		default:
 			b, err := redisClient.SetNX(k, v, rl.TTL).Result()
 			if err != nil {
-				log.Println("Lock [SetNX] failed:", err)
+				rl.Logger.Printf("RedisLock: Lock [SetNX] failed: %v \n", err)
 				return err
 			}
 			if !b {
@@ -115,15 +112,15 @@ func (rl *RedisLock) Lock() error {
 
 func (rl *RedisLock) UnLock() error {
 	if rl.value == "" {
-		return ErrEmptyVal
+		return impl.ErrUnLock
 	}
 	res, err := redisClient.Eval(UnlockScript, []string{rl.generateRedisKey()}, rl.value).Result()
 	if err != nil {
-		log.Println("UnLock [Eval] failed: ", err.Error())
+		rl.Logger.Printf("RedisLock: UnLock [Eval] failed: %v \n ", err)
 		return err
 	}
 	if res.(int64) == 0 {
-		log.Printf("bizKey: %s has already expire ", rl.bizKey)
+		rl.Logger.Printf("RedisLock: bizKey %s has already expired \n", rl.bizKey)
 	}
 
 	//notify the watch goroutine to stop watch the key
@@ -158,10 +155,10 @@ func (rl *RedisLock) watch() {
 			//renewal key for 30s if key still exist
 			res, err := redisClient.Eval(RenewalScript, []string{key}, 30000).Result()
 			if err != nil {
-				log.Printf("renewal key %s failed: %s", key, err.Error())
+				rl.Logger.Printf("RedisLock: [Eval] renewal key %s failed: %v \n", key, err)
 			} else {
 				if r, _ := res.(int64); r == 1 {
-					log.Printf("renewal key: %s successfuly ", key)
+					rl.Logger.Printf("RedisLock: renewal key %s successfully \n", key)
 				}
 			}
 		case <-rl.stopWatchCh:

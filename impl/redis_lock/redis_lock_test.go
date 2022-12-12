@@ -17,7 +17,7 @@ func TestRedisLock_Lock(t *testing.T) {
 		DBIndex:     15,
 		MaxConns:    20,
 		IdleTimeout: 10 * time.Second,
-		Password:    "123456",
+		//Password:    "123456",
 	})
 
 	m := make(map[int]bool, 100)

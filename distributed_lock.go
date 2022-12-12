@@ -27,3 +27,8 @@ func New(bizKey string, opts ...entry.Option) DistributedLock {
 		return redis_lock.New(bizKey, opts...)
 	}
 }
+
+//suggest set your project name as GlobalPrefix
+func SetGlobalPrefix(p string) {
+	entry.GlobalPrefix = p
+}

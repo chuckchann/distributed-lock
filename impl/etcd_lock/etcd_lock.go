@@ -2,14 +2,14 @@ package etcd_lock
 
 import (
 	"context"
-	"errors"
 	"github.com/chuckchann/distributed-lock/entry"
+	"github.com/chuckchann/distributed-lock/impl"
 	"go.etcd.io/etcd/client/v3/concurrency"
 	"log"
 )
 
 type EtcdLock struct {
-	*entry.OptionConfig
+	*entry.Options
 	bizKey string
 	value  string
 	m      *concurrency.Mutex
@@ -17,6 +17,13 @@ type EtcdLock struct {
 }
 
 func New(bizKey string, opts ...entry.Option) *EtcdLock {
+	o := &entry.Options{}
+	for _, opt := range opts {
+		opt(o)
+	}
+	if o.Logger == nil {
+		o.Logger = log.Default()
+	}
 	return &EtcdLock{
 		bizKey: bizKey,
 	}
@@ -25,7 +32,7 @@ func New(bizKey string, opts ...entry.Option) *EtcdLock {
 func (el *EtcdLock) TryLock() error {
 	s, err := concurrency.NewSession(etcdClinet)
 	if err != nil {
-		log.Println("etcd new session failed, ", err.Error())
+		el.Logger.Printf("EtcdLock: TryLock [NewSession] failed %v \n", err)
 		return err
 	}
 	m := concurrency.NewMutex(s, el.bizKey)
@@ -44,7 +51,7 @@ func (el *EtcdLock) TryLock() error {
 func (el *EtcdLock) Lock() error {
 	s, err := concurrency.NewSession(etcdClinet)
 	if err != nil {
-		log.Println("etcd new session failed, ", err.Error())
+		el.Logger.Printf("EtcdLock: Lock [NewSession] failed %v \n", err)
 		return err
 	}
 	m := concurrency.NewMutex(s, el.bizKey)
@@ -69,9 +76,7 @@ func (el *EtcdLock) Lock() error {
 
 func (el *EtcdLock) UnLock() error {
 	if el.m == nil || el.s == nil {
-		str := "etcd session or mutex is nil"
-		log.Println(str)
-		return errors.New(str)
+		return impl.ErrUnLock
 	}
 	defer el.s.Close()
 
