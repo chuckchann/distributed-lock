@@ -37,7 +37,7 @@ func main()  {
 	
 	// create a new redis lock
 	l := distributed_lock.New("test")
-  
+	
     // acquire lock
 	err := l.Lock()
 	if err != nil {
@@ -45,8 +45,9 @@ func main()  {
 	}
 
 	// acquire lock successfully
-	// handle logic business ...
 
+	// do something ...
+	
 	l.UnLock()
 }
 ```
