@@ -36,3 +36,9 @@ func WithLogger(l Logger) Option {
 		c.Logger = l
 	}
 }
+
+func WithWatch(w bool) Option {
+	return func(c *Options) {
+		c.Watch = w
+	}
+}

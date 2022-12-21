@@ -11,6 +11,7 @@ type Options struct {
 	Timeout time.Duration
 	NoSpin  bool
 	Logger  Logger
+	Watch   bool
 }
 
 type Config struct {

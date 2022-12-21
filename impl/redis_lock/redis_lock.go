@@ -31,6 +31,7 @@ func New(bizKey string, opts ...entry.Option) *RedisLock {
 	o := &entry.Options{
 		TTL:    DefaultTTL,
 		NoSpin: false,
+		Watch:  false,
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -38,10 +39,14 @@ func New(bizKey string, opts ...entry.Option) *RedisLock {
 	if o.Logger == nil {
 		o.Logger = log.Default()
 	}
+	var ch chan struct{}
+	if o.Watch {
+		ch = make(chan struct{}, 1) //buffered channel prevent goroutine leak
+	}
 	return &RedisLock{
 		Options:     o,
 		bizKey:      bizKey,
-		stopWatchCh: make(chan struct{}, 1), //buffered channel prevent goroutine leak
+		stopWatchCh: ch,
 	}
 }
 
@@ -66,7 +71,9 @@ func (rl *RedisLock) TryLock() error {
 	//get lock success
 	rl.value = v
 
-	go rl.watch()
+	if rl.Watch {
+		go rl.watch()
+	}
 
 	return nil
 }
@@ -103,7 +110,9 @@ func (rl *RedisLock) Lock() error {
 			rl.value = v
 
 			//watch the key after acquire lock successfully
-			go rl.watch()
+			if rl.Watch {
+				go rl.watch()
+			}
 
 			return nil
 		}
@@ -124,7 +133,9 @@ func (rl *RedisLock) UnLock() error {
 	}
 
 	//notify the watch goroutine to stop watch the key
-	rl.stopWatchCh <- struct{}{}
+	if rl.Watch {
+		rl.stopWatchCh <- struct{}{}
+	}
 
 	return nil
 }
