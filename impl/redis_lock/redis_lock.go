@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	DefaultTTL     = 10 * time.Second
-	DefaultTimeout = time.Second
-	WatchInterval  = 5 * time.Second
+	DefaultTTL          = 10 * time.Second
+	DefaultTimeout      = 1 * time.Second
+	WatchInterval       = 5 * time.Second
+	RetryLockInterval   = 100 * time.Millisecond
 )
 
 type RedisLock struct {
@@ -104,6 +105,7 @@ func (rl *RedisLock) Lock() error {
 					//no spin: yield current p, allowing other g to obtain cpu
 					runtime.Gosched()
 				}
+				time.Sleep(RetryLockInterval)
 				break
 			}
 
