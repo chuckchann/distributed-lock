@@ -37,8 +37,14 @@ func WithLogger(l Logger) Option {
 	}
 }
 
-func WithWatch(w bool) Option {
+func WithRenewalTime(rt time.Duration) Option {
 	return func(c *Options) {
-		c.Watch = w
+		c.RenewalTime = rt
+	}
+}
+
+func WithMaxRetryTimes(t int) Option {
+	return func(c *Options) {
+		c.MaxRetryTimes = t
 	}
 }

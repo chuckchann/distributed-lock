@@ -16,19 +16,30 @@ var (
 	UnlockScript = `
    if redis.call('GET', KEYS[1]) == ARGV[1]
      then 
-         return redis.call('DEL', KEYS[1])
+		 redis.call('PUBLISH', KEYS[2], ARGV[2])  -- awake waiting client
+         redis.call('DEL', KEYS[1]) 
+		 return 0
      else
-         return 0
+		 redis.call('PUBLISH', KEYS[2], ARGV[2])  -- awake waiting client
+         return 1
    end
 `
 
 	//RenewalScript for renewal the lease
 	RenewalScript = `
-	if redis.call('EXISTS', KEYS[1]) == 1
-		then 
-   			redis.call('PEXPIRE', KEYS[1], ARGV[1])
-  			return 1 
-	end
-	return 0
+		local val =  redis.call('GET', KEYS[1])
+		if val == false  -- false means key is not exist
+		then
+			redis.call('PEXPIRE', KEYS[1], ARGV[2])
+  			return 0
+		else
+			if val == ARGV[1] 
+			then
+				redis.call('PEXPIRE', KEYS[1], ARGV[2])
+			    return 1
+			else 
+				return 2
+			end
+		end
 `
 )

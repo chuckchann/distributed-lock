@@ -7,11 +7,12 @@ import (
 var GlobalPrefix string
 
 type Options struct {
-	TTL     time.Duration
-	Timeout time.Duration
-	NoSpin  bool
-	Logger  Logger
-	Watch   bool
+	TTL           time.Duration
+	Timeout       time.Duration
+	NoSpin        bool
+	Logger        Logger
+	RenewalTime   time.Duration
+	MaxRetryTimes int
 }
 
 type Config struct {

@@ -15,7 +15,7 @@ func TestRedisLock_Lock(t *testing.T) {
 	Init(entry.Config{
 		Endpoints:   []string{host},
 		DBIndex:     15,
-		MaxConns:    20,
+		MaxConns:    200,
 		IdleTimeout: 10 * time.Second,
 		//Password:    "123456",
 	})
@@ -24,12 +24,12 @@ func TestRedisLock_Lock(t *testing.T) {
 	iphone := 50
 	rl := New("buy-iphone", entry.WithTTL(time.Second*10))
 	wg := sync.WaitGroup{}
-	for i := 0; i < 100; i++ {
+	for i := 1; i <= 100; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
 			if err := rl.Lock(); err != nil {
-				log.Println("获取锁失败")
+				log.Println(i, " 获取锁失败", err)
 				return
 			}
 			defer rl.UnLock()
@@ -55,6 +55,8 @@ func TestRedisLock_Lock(t *testing.T) {
 		}
 	}
 
+	fmt.Println("sub count : ", count)
+	fmt.Println("sub count666 : ", count666)
 	fmt.Println("抢到 ", count1, "没抢到 ", count2)
 
 }
@@ -73,7 +75,7 @@ func TestRedisLock_Lock2(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		rl := New(bizKey, entry.WithTTL(5*time.Second))
+		rl := New(bizKey, entry.WithTTL(5*time.Second), entry.WithMaxRetryTimes(10))
 		if err := rl.Lock(); err != nil {
 			t.Fatal("1获取锁失败")
 		}
@@ -82,12 +84,13 @@ func TestRedisLock_Lock2(t *testing.T) {
 		t.Log("1 doing something...")
 		time.Sleep(6 * time.Second)
 
+		fmt.Println("1 释放锁 ")
 		rl.UnLock()
 	}()
 
 	go func() {
 		defer wg.Done()
-		rl := New(bizKey, entry.WithTTL(5*time.Second))
+		rl := New(bizKey, entry.WithTTL(5*time.Second), entry.WithMaxRetryTimes(10))
 		if err := rl.Lock(); err != nil {
 			t.Fatal("2获取锁失败")
 		}
@@ -96,6 +99,53 @@ func TestRedisLock_Lock2(t *testing.T) {
 		t.Log("2 doing something...")
 		time.Sleep(6 * time.Second)
 
+		fmt.Println("2 释放锁 ")
+		rl.UnLock()
+	}()
+
+	wg.Wait()
+	time.Sleep(2 * time.Second)
+}
+
+func TestRedisLock_Lock3(t *testing.T) {
+	Init(entry.Config{
+		Endpoints:   []string{host},
+		DBIndex:     15,
+		MaxConns:    20,
+		IdleTimeout: 10 * time.Second,
+	})
+
+	bizKey := "test"
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		rl := New(bizKey, entry.WithTTL(5*time.Second), entry.WithTimeout(time.Second), entry.WithMaxRetryTimes(10))
+		if err := rl.Lock(); err != nil {
+			t.Fatal("1获取锁失败")
+		}
+		t.Log("1获取锁成功")
+
+		t.Log("1 doing something...")
+		time.Sleep(6 * time.Second)
+
+		fmt.Println("1 释放锁 ")
+		rl.UnLock()
+	}()
+
+	go func() {
+		defer wg.Done()
+		rl := New(bizKey, entry.WithTTL(5*time.Second), entry.WithMaxRetryTimes(10))
+		if err := rl.Lock(); err != nil {
+			t.Fatal("2获取锁失败")
+		}
+		t.Log("2获取锁成功")
+
+		t.Log("2 doing something...")
+		time.Sleep(6 * time.Second)
+
+		fmt.Println("2 释放锁 ")
 		rl.UnLock()
 	}()
 
