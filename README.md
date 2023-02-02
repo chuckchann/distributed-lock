@@ -12,7 +12,10 @@ distributed-lock is a high performance distributed mutex written in Go. It provi
 - [x] etcd: guarantee **CP**
 - [x] zookeeper: guarantee **CP**
 
-------
+## Features
+
+- provide multi implements, including redis, etcd and zookeeper.
+- in redis implement: <u>use lua script to lock/unlock redis lock</u>, <u>watch lock after acquiring lock</u>, <u>subscribe a topic when acquire lock failed ,when receive message from this topic then can acquire lock again (which can reduce interaction with redis)</u>.   
 
 ## How to use
 
@@ -51,8 +54,6 @@ func main()  {
 	l.UnLock()
 }
 ```
-
-
 
 
 ------
