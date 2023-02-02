@@ -59,7 +59,7 @@ func main()  {
 
 ## TODO
 
-- redis lock: change old lock policy(self spin if current lock was occupied by other client), the new lock policy just like [redission](https://github.com/redisson/redisson).
+- [x] redis lock: change old lock policy(self spin if current lock was occupied by other client), the new lock policy just like [redission](https://github.com/redisson/redisson).
 
-  
+
 
